@@ -6,7 +6,7 @@ This is repository for Ksema Client SDK Golang
 Golang 1.24
 
 ### How to Use
-Run command <b>go get github.com/carakacloud/ksema-sdk</b> in your golang folder
+Run command <b>go get github.com/carakacloud/ksema-sdk-go</b> in your golang folder
 
 ## Functions
 #### func New
