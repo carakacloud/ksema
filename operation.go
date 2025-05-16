@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -31,7 +31,7 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -80,7 +80,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
@@ -136,7 +136,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
@@ -191,7 +191,7 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
@@ -253,7 +253,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, dat
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -301,7 +301,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
@@ -356,7 +356,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -437,7 +437,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -485,7 +485,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -533,7 +533,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -581,7 +581,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -629,7 +629,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return err
@@ -665,11 +665,5 @@ func getReturnCodeMessage(code int) string {
 func uint16ToBytes(num uint16) []byte {
 	b := make([]byte, 2)
 	binary.BigEndian.PutUint16(b, num)
-	return b
-}
-
-func uint32ToBytes(num uint32) []byte {
-	b := make([]byte, 4)
-	binary.BigEndian.PutUint32(b, num)
 	return b
 }

@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -73,7 +73,7 @@ func (k *Ksema) auth() (bool, error) {
 	defer resp.Body.Close()
 
 	// Read and print response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("Error reading response body: %v\n", err)
 		return false, err

@@ -44,4 +44,3 @@ func main() {
 	}
 	log.Printf("Decrypted: %s\n", decrypted)
 }
-```
