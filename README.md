@@ -15,12 +15,17 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/carakacloud/ksema"
 )
 
 func main() {
-	user, err := ksema.New("<SERVER IP>", "<KSEMA API KEY>", "<KSEMA PASS KEY>", "<KSEMA PIN>")
+	ksemaServerIp := os.Getenv("KSEMA_HOST")
+	ksemaAPIKey := os.Getenv("KSEMA_API_KEY")
+	ksemaPIN := os.Getenv("KSEMA_PIN")
+
+	user, err := ksema.New(ksemaServerIp, ksemaAPIKey, ksemaPIN)
 	if err != nil {
 		log.Fatal("Error creating Ksema object")
 	}
@@ -30,14 +35,14 @@ func main() {
 	}
 
 	message := []byte("Hello, this is a secret message!")
-	
-	encrypted, err := user.Encrypt(message, "symmetric-key-1")
+
+	encrypted, err := user.Encrypt(message, "")
 	if err != nil {
 		log.Fatal("Failed to encrypt")
 	}
 	log.Printf("Encrypted: %s\n", encrypted)
 
-	decrypted, err := user.Decrypt(encrypted, "symmetric-key-1")
+	decrypted, err := user.Decrypt(encrypted, "")
 	if err != nil {
 		log.Fatal("Failed to decrypt")
 	}
