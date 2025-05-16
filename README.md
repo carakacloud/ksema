@@ -25,8 +25,7 @@ func main() {
 		log.Fatal("Error creating Ksema object")
 	}
 
-	err = user.Ping()
-	if err != nil {
+	if err := user.Ping(); err != nil {
 		log.Fatal("Failed to ping server")
 	}
 
@@ -44,3 +43,4 @@ func main() {
 	}
 	log.Printf("Decrypted: %s\n", decrypted)
 }
+```
