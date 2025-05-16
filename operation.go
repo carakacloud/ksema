@@ -90,6 +90,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		fmt.Printf("Error unmarshaling response: %v\n", err)
+		fmt.Printf("body : %s", string(body))
 		return nil, err
 	}
 
@@ -332,13 +333,14 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 	return random, nil
 }
 
-func operationBackup(client *http.Client, sessionId string, serverIP string, userType int, data []byte) error {
+func operationBackup(client *http.Client, sessionId string, serverIP string, userType int, data []byte, keyLabel string) error {
 	var err error
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
 		Operation: FunctionBackup,
 		Data:      data,
+		Label:     keyLabel,
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {

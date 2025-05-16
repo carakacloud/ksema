@@ -11,9 +11,9 @@ Run command <b>go get github.com/carakacloud/ksema-sdk-go</b> in your golang fol
 ## Functions
 #### func New
 ```go
-func New(serverIP string, passKey string, apiKey string, pin string) (*Ksema, error)
+func New(serverIP string, apiKey string, pin string) (*Ksema, error)
 ```
-Setup connection to Ksema server with passkey and apikey (include pin if user slot).
+Setup connection to Ksema server with apikey (include pin if user slot).
 
 #### func (*Ksema) Ping
 ```go
@@ -23,25 +23,25 @@ Request ping to Ksema server.
 
 #### func (*Ksema) Encrypt
 ```go
-func (*Ksema) Encrypt(plainText []byte, keyLabel string) ([]byte, error)
+func (*Ksema) Encrypt(plainText []byte, keyLabel string) (string, error)
 ```
 Request encryption to Ksema server.
 
 #### func (*Ksema) Decrypt
 ```go
-func (*Ksema) Decrypt(cihperText []byte, keyLabel string) ([]byte, error)
+func (*Ksema) Decrypt(cihperText string, keyLabel string) (string, error)
 ```
 Request decryption to Ksema server.
 
 #### func (*Ksema) Sign
 ```go
-func (*Ksema) Sign(data []byte, keyLabel string) ([]byte, error)
+func (*Ksema) Sign(dataFilename string, keyLabel string) (string, error)
 ```
 Request signature to Ksema server.
 
 #### func (*Ksema) Verify
 ```go
-func (*Ksema) Verify(data []byte, signature []byte, keyLabel string) ([]byte, error)
+func (*Ksema) Verify(dataFilename string, signatureFilename string, keyLabel string) error
 ```
 Request data verify to Ksema server with signature.
 

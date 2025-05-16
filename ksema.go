@@ -3,16 +3,17 @@ package ksema
 import (
 	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 type Ksema struct {
 	serverIP string
-	passKey  string
 	apiKey   string
 	pin      string
 	client   *http.Client
@@ -23,7 +24,7 @@ type Ksema struct {
 // New return the pointer of Ksema object
 //
 // It automatically execute the key exchange and must be success in order to use it
-func New(serverIP, passKey, apiKey, pin string) (*Ksema, error) {
+func New(serverIP, apiKey, pin string) (*Ksema, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -37,13 +38,12 @@ func New(serverIP, passKey, apiKey, pin string) (*Ksema, error) {
 
 	k := &Ksema{
 		serverIP: serverIP,
-		passKey:  passKey,
 		apiKey:   apiKey,
 		pin:      pin,
 		client:   client,
 	}
 
-	if success, err := k.keyExchange(); err != nil || !success {
+	if success, err := k.auth(); err != nil || !success {
 		fmt.Println("Key exchange failed, please retry")
 		return nil, err
 	}
@@ -51,14 +51,13 @@ func New(serverIP, passKey, apiKey, pin string) (*Ksema, error) {
 	return k, nil
 }
 
-// Perform key exchange with three-way encrypted handshake
-func (k *Ksema) keyExchange() (bool, error) {
+// Perform auth with account keys
+func (k *Ksema) auth() (bool, error) {
 	var res AuthResponse
 
 	payload := AuthRequest{
-		Passkey: k.passKey,
-		APIKey:  k.apiKey,
-		PIN:     k.pin,
+		APIKey: k.apiKey,
+		PIN:    k.pin,
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
@@ -103,45 +102,77 @@ func (k *Ksema) Ping() error {
 }
 
 // Perform encrypt of a data bytes
-// Return the cipher in bytes and error
+// Return the cipher in base64 and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Encrypt(data []byte, keyLabel string) ([]byte, error) {
+func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
 	if k.userType > USER_OBJECT && keyLabel == "" {
-		return nil, errors.New("no key label specified")
+		return "", errors.New("no key label specified")
 	}
-	return operationEncrypt(k.client, k.sessID, k.serverIP, data, keyLabel)
+	cipher, err := operationEncrypt(k.client, k.sessID, k.serverIP, data, keyLabel)
+
+	return base64.StdEncoding.EncodeToString(cipher), err
 }
 
-// Perform decrypt of a data bytes
-// Return the plaintext in bytes and error
+// Perform decrypt of a data base64
+// Return the plaintext in string and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Decrypt(data []byte, keyLabel string) ([]byte, error) {
+func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 	if k.userType > USER_OBJECT && keyLabel == "" {
-		return nil, errors.New("no key label specified")
+		return "", errors.New("no key label specified")
 	}
-	return operationDecrypt(k.client, k.sessID, k.serverIP, data, keyLabel)
+	dataBytes, err := base64.StdEncoding.DecodeString(data)
+	if err != nil {
+		return "", err
+	}
+	plain, err := operationDecrypt(k.client, k.sessID, k.serverIP, dataBytes, keyLabel)
+
+	return string(plain), err
 }
 
-// Perform signing of a data bytes
-// Return the signature in bytes and error
+// Perform signing of a file data
+// Return the filename of data signature and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Sign(data []byte, keyLabel string) ([]byte, error) {
+func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
 	if k.userType > USER_OBJECT && keyLabel == "" {
-		return nil, errors.New("no key label specified")
+		return "", errors.New("no key label specified")
 	}
-	return operationSign(k.client, k.sessID, k.serverIP, data, keyLabel)
+	if dataFilename == "" {
+		return "", errors.New("data filename is not specified")
+	}
+	data, err := os.ReadFile(dataFilename)
+	if err != nil {
+		return "", err
+	}
+
+	signature, err := operationSign(k.client, k.sessID, k.serverIP, data, keyLabel)
+	if err := os.WriteFile("signature.file", signature, 0644); err != nil {
+		return "", err
+	}
+
+	return "signature.file", err
 }
 
 // Perform verifying of a data bytes with signature
 // Return error if it is invalid
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Verify(data, signature []byte, keyLabel string) error {
+func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string) error {
 	if k.userType > USER_OBJECT && keyLabel == "" {
 		return errors.New("no key label specified")
+	}
+	if dataFilename == "" || signatureFilename == "" {
+		return errors.New("required filename is not specified")
+	}
+	data, err := os.ReadFile(dataFilename)
+	if err != nil {
+		return err
+	}
+	signature, err := os.ReadFile(signatureFilename)
+	if err != nil {
+		return err
 	}
 	return operationVerify(k.client, k.sessID, k.serverIP, data, signature, keyLabel)
 }
@@ -170,7 +201,7 @@ func (k *Ksema) Backup(fileName, keyLabel string) error {
 	if k.userType > USER_OBJECT && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
-	return operationBackup(k.client, k.sessID, k.serverIP, k.userType, []byte(fileName))
+	return operationBackup(k.client, k.sessID, k.serverIP, k.userType, []byte(fileName), keyLabel)
 }
 
 // Perform restore of a keylabel using the backed-up file

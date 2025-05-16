@@ -6,9 +6,8 @@ type Data struct {
 }
 
 type AuthRequest struct {
-	Passkey string `json:"passKey"`
-	APIKey  string `json:"apiKey"`
-	PIN     string `json:"pin"`
+	APIKey string `json:"apiKey"`
+	PIN    string `json:"pin"`
 }
 
 type AuthData struct {
