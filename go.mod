@@ -1,3 +1,3 @@
-module github.com/carakacloud/ksema-sdk-go
+module github.com/carakacloud/ksema
 
 go 1.24.0
