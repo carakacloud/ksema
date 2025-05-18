@@ -177,11 +177,11 @@ func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string) 
 	return operationVerify(k.client, k.sessID, k.serverIP, data, signature, keyLabel)
 }
 
-// Generate random data in bytes
+// Generate random data in string base64
 // Return error if it is not success
 //
 // if the length specified is 0, it will use the default length which is 32
-func (k *Ksema) Random(lenRandom uint16) ([]byte, error) {
+func (k *Ksema) Random(lenRandom uint16) (string, error) {
 	var lengthBytes []byte
 
 	if lenRandom > 0 {
@@ -190,7 +190,10 @@ func (k *Ksema) Random(lenRandom uint16) ([]byte, error) {
 		lengthBytes = nil
 	}
 
-	return operationRNG(k.client, k.sessID, k.serverIP, lengthBytes)
+	rnd, err := operationRNG(k.client, k.sessID, k.serverIP, lengthBytes)
+	rndBased := base64.StdEncoding.EncodeToString(rnd)
+
+	return rndBased, err
 }
 
 // Perform backup of a keylabel
