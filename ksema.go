@@ -10,6 +10,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"golang.org/x/term"
 )
 
 type Ksema struct {
@@ -24,7 +26,7 @@ type Ksema struct {
 // New return the pointer of Ksema object
 //
 // It automatically execute the key exchange and must be success in order to use it
-func New(serverIP, apiKey, pin string) (*Ksema, error) {
+func New(serverIP, apiKey string) (*Ksema, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -36,10 +38,17 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 		},
 	}
 
+	fmt.Print("Enter PIN: ")
+	pinBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		fmt.Println("\nError reading PIN:", err)
+		return nil, err
+	}
+
 	k := &Ksema{
 		serverIP: serverIP,
 		apiKey:   apiKey,
-		pin:      pin,
+		pin:      string(pinBytes),
 		client:   client,
 	}
 
