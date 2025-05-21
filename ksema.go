@@ -44,7 +44,7 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 	}
 
 	if success, err := k.auth(); err != nil || !success {
-		fmt.Println("Key exchange failed, please retry")
+		fmt.Println("Authentication failed, please retry")
 		return nil, err
 	}
 
