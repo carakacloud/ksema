@@ -44,7 +44,6 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 	}
 
 	if success, err := k.auth(); err != nil || !success {
-		fmt.Println("Authentication failed, please retry")
 		return nil, err
 	}
 
@@ -61,32 +60,27 @@ func (k *Ksema) auth() (bool, error) {
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return false, err
 	}
 
 	resp, err := k.client.Post(fmt.Sprintf("https://%s/api/hsm/auth", k.serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return false, err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return false, err
 	}
 
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return false, err
 	}
 
 	if !res.Success {
-		return false, errors.New("return auth request is false")
+		return false, errors.New("authentication failed, please retry")
 	}
 
 	k.sessID = res.Data.SessionID
@@ -239,7 +233,6 @@ func (k *Ksema) genKeySym(label string) error {
 }
 
 func (k *Ksema) genKeyAsym(pubLabel, privLabel string) error {
-	// label := fmt.Sprintf("%s;%s", pubLabel, privLabel)
 	return operationGenKeyAsym(k.client, k.sessID, k.serverIP, pubLabel, privLabel)
 }
 
@@ -251,7 +244,3 @@ func (k *Ksema) SetIV(iv string) error {
 	}
 	return operationSetIV(k.client, k.sessID, k.serverIP, []byte(iv))
 }
-
-// func (k *Ksema) Close() {
-// 	fmt.Println("Closing connection...")
-// }

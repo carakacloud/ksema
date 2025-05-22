@@ -19,28 +19,23 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -48,7 +43,7 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return ping request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -68,29 +63,23 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return nil, err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		fmt.Printf("body : %s", string(body))
 		return nil, err
 	}
 
@@ -98,7 +87,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 		if res.ErrorMsg != "" {
 			return nil, errors.New(res.ErrorMsg)
 		}
-		return nil, errors.New("return auth request is false")
+		return nil, errors.New("return encrypt request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -106,7 +95,6 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 
 	cipher, err := base64.StdEncoding.DecodeString(res.Data.Message)
 	if err != nil {
-		fmt.Printf("Error decoding return message: %v\n", err)
 		return nil, err
 	}
 
@@ -124,28 +112,23 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return nil, err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return nil, err
 	}
 
@@ -153,7 +136,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 		if res.ErrorMsg != "" {
 			return nil, errors.New(res.ErrorMsg)
 		}
-		return nil, errors.New("return auth request is false")
+		return nil, errors.New("return decrypt request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -161,7 +144,6 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 
 	plain, err := base64.StdEncoding.DecodeString(res.Data.Message)
 	if err != nil {
-		fmt.Printf("Error decoding return message: %v\n", err)
 		return nil, err
 	}
 
@@ -179,28 +161,23 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return nil, err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return nil, err
 	}
 
@@ -208,7 +185,7 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 		if res.ErrorMsg != "" {
 			return nil, errors.New(res.ErrorMsg)
 		}
-		return nil, errors.New("return auth request is false")
+		return nil, errors.New("return sign request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -216,7 +193,6 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 
 	signature, err := base64.StdEncoding.DecodeString(res.Data.Message)
 	if err != nil {
-		fmt.Printf("Error decoding return message: %v\n", err)
 		return nil, err
 	}
 
@@ -241,28 +217,23 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, dat
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -270,7 +241,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, dat
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return verify request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -289,28 +260,23 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return nil, err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return nil, err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return nil, err
 	}
 
@@ -318,7 +284,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 		if res.ErrorMsg != "" {
 			return nil, errors.New(res.ErrorMsg)
 		}
-		return nil, errors.New("return auth request is false")
+		return nil, errors.New("return random request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -326,7 +292,6 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 
 	random, err := base64.StdEncoding.DecodeString(res.Data.Message)
 	if err != nil {
-		fmt.Printf("Error decoding return message: %v\n", err)
 		return nil, err
 	}
 
@@ -344,28 +309,23 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -373,7 +333,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return backup request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -381,7 +341,6 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 
 	dataBackup, err := base64.StdEncoding.DecodeString(res.Data.Message)
 	if err != nil {
-		fmt.Printf("Error decoding return message: %v\n", err)
 		return err
 	}
 
@@ -425,28 +384,23 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -454,7 +408,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return restore request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -473,28 +427,23 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -502,7 +451,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return delete request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -521,28 +470,23 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -550,7 +494,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return genkey request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -569,28 +513,23 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -598,7 +537,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return genkey request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
@@ -617,28 +556,23 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 	}
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling JSON: %v\n", err)
 		return err
 	}
 
 	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		fmt.Printf("Error making GET request: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
 
-	// Read and print response
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response body: %v\n", err)
 		return err
 	}
 
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
 		return err
 	}
 
@@ -646,7 +580,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 		if res.ErrorMsg != "" {
 			return errors.New(res.ErrorMsg)
 		}
-		return errors.New("return auth request is false")
+		return errors.New("return set iv request is false")
 	}
 	if res.Data.RetCode != SUCCESS {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
