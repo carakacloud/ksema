@@ -589,6 +589,93 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 	return nil
 }
 
+func operationChangePIN(client *http.Client, sessionId string, serverIP string, newPIN string) ([]byte, error) {
+	var err error
+
+	payload := ServiceRequest{
+		SessionID: sessionId,
+		Operation: FunctionChangePIN,
+		Data:      []byte(newPIN),
+	}
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var res ServiceResponse
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	if !res.Success {
+		if res.ErrorMsg != "" {
+			return nil, errors.New(res.ErrorMsg)
+		}
+		return nil, errors.New("return changepin request is false")
+	}
+	if res.Data.RetCode != SUCCESS {
+		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
+	}
+
+	return []byte(res.Data.Message), nil
+}
+
+func operationChangeLabel(client *http.Client, sessionId string, serverIP string, keyLabel string, newLabel string) error {
+	var err error
+
+	payload := ServiceRequest{
+		SessionID: sessionId,
+		Operation: FunctionChangeLabel,
+		Label:     keyLabel,
+		Data:      []byte(newLabel),
+	}
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var res ServiceResponse
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return err
+	}
+
+	if !res.Success {
+		if res.ErrorMsg != "" {
+			return errors.New(res.ErrorMsg)
+		}
+		return errors.New("return changepin request is false")
+	}
+	if res.Data.RetCode != SUCCESS {
+		return errors.New(getReturnCodeMessage(res.Data.RetCode))
+	}
+
+	return nil
+}
+
 func getReturnCodeMessage(code int) string {
 	if msg, exists := mapRetCodeToString[code]; exists {
 		return msg

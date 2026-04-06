@@ -52,18 +52,20 @@ const (
 )
 
 const (
-	FunctionPing       = "PING"
-	FunctionEncrypt    = "ENCRYPT"
-	FunctionDecrypt    = "DECRYPT"
-	FunctionSign       = "SIGN"
-	FunctionVerify     = "VERIFY"
-	FunctionRNG        = "RNG"
-	FunctionBackup     = "BACKUP"
-	FunctionRestore    = "RESTORE"
-	FunctionDelete     = "DELETE"
-	FunctionGenKeySym  = "GENKEYSYM"
-	FunctionGenKeyAsym = "GENKEYASYM"
-	FunctionSetIV      = "SETIV"
+	FunctionPing        = "PING"
+	FunctionEncrypt     = "ENCRYPT"
+	FunctionDecrypt     = "DECRYPT"
+	FunctionSign        = "SIGN"
+	FunctionVerify      = "VERIFY"
+	FunctionRNG         = "RNG"
+	FunctionBackup      = "BACKUP"
+	FunctionRestore     = "RESTORE"
+	FunctionDelete      = "DELETE"
+	FunctionGenKeySym   = "GENKEYSYM"
+	FunctionGenKeyAsym  = "GENKEYASYM"
+	FunctionSetIV       = "SETIV"
+	FunctionChangePIN   = "CHANGEPIN"
+	FunctionChangeLabel = "CHANGELABEL"
 )
 
 var mapRetCodeToString map[int]string = map[int]string{
