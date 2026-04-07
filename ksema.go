@@ -248,8 +248,8 @@ func (k *Ksema) SetIV(iv string) error {
 // Change the PIN of slot
 //
 // NOTE: this will generate new apikey and all existing apikey is deleted
-func (k *Ksema) ChangePIN(newPIN string) (string, error) {
-	newAPIKey, err := operationChangePIN(k.client, k.sessID, k.serverIP, newPIN)
+func (k *Ksema) ChangePIN(oldPIN string, newPIN string) (string, error) {
+	newAPIKey, err := operationChangePIN(k.client, k.sessID, k.serverIP, oldPIN, newPIN)
 
 	return string(newAPIKey), err
 }

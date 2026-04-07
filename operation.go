@@ -589,12 +589,13 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 	return nil
 }
 
-func operationChangePIN(client *http.Client, sessionId string, serverIP string, newPIN string) ([]byte, error) {
+func operationChangePIN(client *http.Client, sessionId string, serverIP string, oldPIN string, newPIN string) ([]byte, error) {
 	var err error
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
 		Operation: FunctionChangePIN,
+		Label:     oldPIN,
 		Data:      []byte(newPIN),
 	}
 	jsonData, err := json.Marshal(payload)
