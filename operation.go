@@ -630,7 +630,12 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
-	return []byte(res.Data.Message), nil
+	apikey, err := base64.StdEncoding.DecodeString(res.Data.Message)
+	if err != nil {
+		return nil, err
+	}
+
+	return apikey, nil
 }
 
 func operationChangeLabel(client *http.Client, sessionId string, serverIP string, keyLabel string, newLabel string) error {
