@@ -33,6 +33,10 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 		return err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -75,6 +79,10 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -126,6 +134,10 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 		return nil, err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -173,6 +185,10 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -231,6 +247,10 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, dat
 		return err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -272,6 +292,10 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -321,6 +345,10 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -398,6 +426,10 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 		return err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -439,6 +471,10 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -484,6 +520,10 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 		return err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -525,6 +565,10 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -570,6 +614,10 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 		return err
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
 	var res ServiceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
@@ -612,6 +660,10 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
@@ -661,6 +713,10 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
 	var res ServiceResponse
