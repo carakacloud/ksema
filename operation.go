@@ -322,7 +322,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 	return random, nil
 }
 
-func operationBackup(client *http.Client, sessionId string, serverIP string, userType int, data []byte, keyLabel string) error {
+func operationBackup(client *http.Client, sessionId string, serverIP string, data []byte, keyLabel string) error {
 	var err error
 
 	payload := ServiceRequest{
@@ -382,12 +382,12 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 
 	os.WriteFile(string(data), []byte(stringHeader+"\n"+stringExported), 0644)
 
-	if userType == USER_OBJECT {
-		exportedLen2 := binary.BigEndian.Uint16(dataBackup[4+headerLen+exportedLen : 6+headerLen+exportedLen])
-		exported2 := dataBackup[6+headerLen+exportedLen : 6+headerLen+exportedLen+exportedLen2]
-		stringExported2 := string(exported2)
-		os.WriteFile("priv"+string(data), []byte(stringHeader+"\n"+stringExported2), 0644)
-	}
+	// if userType == USER_OBJECT {
+	// 	exportedLen2 := binary.BigEndian.Uint16(dataBackup[4+headerLen+exportedLen : 6+headerLen+exportedLen])
+	// 	exported2 := dataBackup[6+headerLen+exportedLen : 6+headerLen+exportedLen+exportedLen2]
+	// 	stringExported2 := string(exported2)
+	// 	os.WriteFile("priv"+string(data), []byte(stringHeader+"\n"+stringExported2), 0644)
+	// }
 
 	return nil
 }

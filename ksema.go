@@ -18,7 +18,6 @@ type Ksema struct {
 	pin      string
 	client   *http.Client
 	sessID   string
-	userType int
 }
 
 // New return the pointer of Ksema object
@@ -84,7 +83,6 @@ func (k *Ksema) auth() (bool, error) {
 	}
 
 	k.sessID = res.Data.SessionID
-	k.userType = res.Data.UserType
 
 	return true, nil
 }
@@ -100,7 +98,7 @@ func (k *Ksema) Ping() error {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	cipher, err := operationEncrypt(k.client, k.sessID, k.serverIP, data, keyLabel)
@@ -113,7 +111,7 @@ func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	dataBytes, err := base64.StdEncoding.DecodeString(data)
@@ -130,7 +128,7 @@ func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	if dataFilename == "" {
@@ -154,7 +152,7 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string) error {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return errors.New("no key label specified")
 	}
 	if dataFilename == "" || signatureFilename == "" {
@@ -195,10 +193,10 @@ func (k *Ksema) Random(lenRandom uint16) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Backup(fileName, keyLabel string) error {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return errors.New("no key label specified")
 	}
-	return operationBackup(k.client, k.sessID, k.serverIP, k.userType, []byte(fileName), keyLabel)
+	return operationBackup(k.client, k.sessID, k.serverIP, []byte(fileName), keyLabel)
 }
 
 // Perform restore of a keylabel using the backed-up file
@@ -210,7 +208,7 @@ func (k *Ksema) Restore(fileName string) error {
 // Perform deletion of a keylabel
 // Return error if it is not success
 func (k *Ksema) Delete(keyLabel string) error {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if keyLabel == "" {
 		return errors.New("no key label specified")
 	}
 	return operationDelete(k.client, k.sessID, k.serverIP, keyLabel)

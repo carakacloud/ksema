@@ -12,7 +12,6 @@ type AuthRequest struct {
 
 type AuthData struct {
 	SessionID string `json:"sessionId"`
-	UserType  int    `json:"userType"`
 }
 
 type AuthResponse struct {
