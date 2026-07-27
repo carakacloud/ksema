@@ -173,11 +173,11 @@ func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, 
 	}
 	switch typeMech {
 	case SHA256_PSS:
-		operation = FunctionSign256PSS
+		operation = FunctionVerify256PSS
 	case SHA512_PSS:
-		operation = FunctionSign512PSS
+		operation = FunctionVerify512PSS
 	case SHA256_PKCS:
-		operation = FunctionSign256PKCS
+		operation = FunctionVerify256PKCS
 	default:
 		return errors.New("invalid verify algorithm")
 	}
