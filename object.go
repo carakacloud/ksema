@@ -1,5 +1,11 @@
 package ksema
 
+const (
+	SHA256_PSS = iota + 1
+	SHA512_PSS
+	SHA256_PKCS
+)
+
 type Data struct {
 	Message string `json:"message"`
 	RetCode int    `json:"retCode"`
@@ -52,20 +58,25 @@ const (
 )
 
 const (
-	FunctionPing        = "PING"
-	FunctionEncrypt     = "ENCRYPT"
-	FunctionDecrypt     = "DECRYPT"
-	FunctionSign        = "SIGN"
-	FunctionVerify      = "VERIFY"
-	FunctionRNG         = "RNG"
-	FunctionBackup      = "BACKUP"
-	FunctionRestore     = "RESTORE"
-	FunctionDelete      = "DELETE"
-	FunctionGenKeySym   = "GENKEYSYM"
-	FunctionGenKeyAsym  = "GENKEYASYM"
-	FunctionSetIV       = "SETIV"
-	FunctionChangePIN   = "CHANGEPIN"
-	FunctionChangeLabel = "CHANGELABEL"
+	FunctionPing          = "PING"
+	FunctionEncrypt       = "ENCRYPT"
+	FunctionDecrypt       = "DECRYPT"
+	FunctionSign256PSS    = "SIGN256PSS"
+	FunctionSign512PSS    = "SIGN512PSS"
+	FunctionSign256PKCS   = "SIGN256PKCS"
+	FunctionVerify256PSS  = "VERIFY256PSS"
+	FunctionVerify512PSS  = "VERIFY512PSS"
+	FunctionVerify256PKCS = "VERIFY256PKCS"
+	FunctionRNG           = "RNG"
+	FunctionBackup        = "BACKUP"
+	FunctionRestore       = "RESTORE"
+	FunctionDelete        = "DELETE"
+	FunctionGenKeySym     = "GENKEYSYM"
+	FunctionGenKeyAsym    = "GENKEYASYM"
+	FunctionSetIV         = "SETIV"
+	FunctionChangePIN     = "CHANGEPIN"
+	FunctionChangeLabel   = "CHANGELABEL"
+	FunctionGetPub        = "GETPUB"
 )
 
 var mapRetCodeToString map[int]string = map[int]string{

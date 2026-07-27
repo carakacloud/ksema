@@ -162,12 +162,12 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 	return plain, nil
 }
 
-func operationSign(client *http.Client, sessionId string, serverIP string, data []byte, keyLabel string) ([]byte, error) {
+func operationSign(client *http.Client, sessionId string, serverIP string, operation string, data []byte, keyLabel string) ([]byte, error) {
 	var err error
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionSign,
+		Operation: operation,
 		Label:     keyLabel,
 		Data:      data,
 	}
@@ -215,7 +215,7 @@ func operationSign(client *http.Client, sessionId string, serverIP string, data 
 	return signature, nil
 }
 
-func operationVerify(client *http.Client, sessionId string, serverIP string, data []byte, signature []byte, keyLabel string) error {
+func operationVerify(client *http.Client, sessionId string, serverIP string, operation string, data []byte, signature []byte, keyLabel string) error {
 	var err error
 
 	dataLen := len(data)
@@ -227,7 +227,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, dat
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionVerify,
+		Operation: operation,
 		Label:     keyLabel,
 		Data:      dataPayload,
 	}
@@ -736,6 +736,58 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 	}
 
 	return nil
+}
+
+func operationGetPub(client *http.Client, sessionId string, serverIP string, pubLabel string) ([]byte, error) {
+	var err error
+
+	payload := ServiceRequest{
+		SessionID: sessionId,
+		Operation: FunctionGetPub,
+		Label:     pubLabel,
+	}
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Post(fmt.Sprintf("https://%s/api/hsm/request", serverIP), "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
+	}
+
+	var res ServiceResponse
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	if !res.Success {
+		if res.ErrorMsg != "" {
+			return nil, errors.New(res.ErrorMsg)
+		}
+		return nil, errors.New("return changepin request is false")
+	}
+	if res.Data.RetCode != SUCCESS {
+		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
+	}
+
+	pubkey, err := base64.StdEncoding.DecodeString(res.Data.Message)
+	if err != nil {
+		return nil, err
+	}
+
+	return pubkey, nil
 }
 
 func getReturnCodeMessage(code int) string {

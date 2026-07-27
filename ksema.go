@@ -129,9 +129,21 @@ func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 // Return the filename of data signature and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
+func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string, error) {
+	var operation string
+
 	if k.userType > USER_OBJECT && keyLabel == "" {
 		return "", errors.New("no key label specified")
+	}
+	switch typeMech {
+	case SHA256_PSS:
+		operation = FunctionSign256PSS
+	case SHA512_PSS:
+		operation = FunctionSign512PSS
+	case SHA256_PKCS:
+		operation = FunctionSign256PKCS
+	default:
+		return "", errors.New("invalid verify algorithm")
 	}
 	if dataFilename == "" {
 		return "", errors.New("data filename is not specified")
@@ -141,7 +153,7 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
 		return "", err
 	}
 
-	signature, err := operationSign(k.client, k.sessID, k.serverIP, data, keyLabel)
+	signature, err := operationSign(k.client, k.sessID, k.serverIP, operation, data, keyLabel)
 	if err := os.WriteFile("signature.file", signature, 0644); err != nil {
 		return "", err
 	}
@@ -153,9 +165,21 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string) (string, error) {
 // Return error if it is invalid
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string) error {
+func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, typeMech int) error {
+	var operation string
+
 	if k.userType > USER_OBJECT && keyLabel == "" {
 		return errors.New("no key label specified")
+	}
+	switch typeMech {
+	case SHA256_PSS:
+		operation = FunctionSign256PSS
+	case SHA512_PSS:
+		operation = FunctionSign512PSS
+	case SHA256_PKCS:
+		operation = FunctionSign256PKCS
+	default:
+		return errors.New("invalid verify algorithm")
 	}
 	if dataFilename == "" || signatureFilename == "" {
 		return errors.New("required filename is not specified")
@@ -168,7 +192,7 @@ func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string) 
 	if err != nil {
 		return err
 	}
-	return operationVerify(k.client, k.sessID, k.serverIP, data, signature, keyLabel)
+	return operationVerify(k.client, k.sessID, k.serverIP, operation, data, signature, keyLabel)
 }
 
 // Generate random data in string base64
@@ -257,4 +281,18 @@ func (k *Ksema) ChangePIN(oldPIN string, newPIN string) (string, error) {
 // Change the key label of specific key
 func (k *Ksema) ChangeLabel(oldLabel string, newLabel string) error {
 	return operationChangeLabel(k.client, k.sessID, k.serverIP, oldLabel, newLabel)
+}
+
+// Get the public key from label
+func (k *Ksema) GetPub(pubLabel string) error {
+	pubKey, err := operationGetPub(k.client, k.sessID, k.serverIP, pubLabel)
+	if err == nil {
+		if err := os.WriteFile("key.pub", pubKey, 0644); err != nil {
+			return fmt.Errorf("write public key: %w", err)
+		}
+	} else {
+		return err
+	}
+
+	return nil
 }
