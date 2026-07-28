@@ -49,7 +49,7 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 		}
 		return errors.New("return ping request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -61,7 +61,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionEncrypt,
+		Operation: functionEncrypt,
 		Label:     keyLabel,
 		Data:      plainText,
 	}
@@ -97,7 +97,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 		}
 		return nil, errors.New("return encrypt request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -114,7 +114,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionDecrypt,
+		Operation: functionDecrypt,
 		Label:     keyLabel,
 		Data:      cipherText,
 	}
@@ -150,7 +150,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 		}
 		return nil, errors.New("return decrypt request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -203,7 +203,7 @@ func operationSign(client *http.Client, sessionId string, serverIP string, opera
 		}
 		return nil, errors.New("return sign request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -263,7 +263,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, ope
 		}
 		return errors.New("return verify request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -275,7 +275,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionRNG,
+		Operation: functionRNG,
 		Data:      data,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -310,7 +310,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 		}
 		return nil, errors.New("return random request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -327,7 +327,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionBackup,
+		Operation: functionBackup,
 		Data:      data,
 		Label:     keyLabel,
 	}
@@ -363,7 +363,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 		}
 		return errors.New("return backup request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -382,7 +382,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 
 	os.WriteFile(string(data), []byte(stringHeader+"\n"+stringExported), 0644)
 
-	if userType == USER_OBJECT {
+	if userType == userObject {
 		exportedLen2 := binary.BigEndian.Uint16(dataBackup[4+headerLen+exportedLen : 6+headerLen+exportedLen])
 		exported2 := dataBackup[6+headerLen+exportedLen : 6+headerLen+exportedLen+exportedLen2]
 		stringExported2 := string(exported2)
@@ -407,7 +407,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionRestore,
+		Operation: functionRestore,
 		Data:      line,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -442,7 +442,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 		}
 		return errors.New("return restore request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -454,7 +454,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionDelete,
+		Operation: functionDelete,
 		Label:     keyLabel,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -489,7 +489,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 		}
 		return errors.New("return delete request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -501,7 +501,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionGenKeySym,
+		Operation: functionGenKeySym,
 		Label:     keyLabel,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -536,7 +536,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 		}
 		return errors.New("return genkey request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -548,7 +548,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionGenKeyAsym,
+		Operation: functionGenKeyAsym,
 		Label:     fmt.Sprintf("%s;%s", pubLabel, privLabel),
 	}
 	jsonData, err := json.Marshal(payload)
@@ -583,7 +583,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 		}
 		return errors.New("return genkey request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -595,7 +595,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionSetIV,
+		Operation: functionSetIV,
 		Data:      data,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -630,7 +630,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 		}
 		return errors.New("return set iv request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -642,7 +642,7 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionChangePIN,
+		Operation: functionChangePIN,
 		Label:     oldPIN,
 		Data:      []byte(newPIN),
 	}
@@ -678,7 +678,7 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 		}
 		return nil, errors.New("return changepin request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -695,7 +695,7 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionChangeLabel,
+		Operation: functionChangeLabel,
 		Label:     keyLabel,
 		Data:      []byte(newLabel),
 	}
@@ -731,7 +731,7 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 		}
 		return errors.New("return changepin request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 
@@ -743,7 +743,7 @@ func operationGetPub(client *http.Client, sessionId string, serverIP string, pub
 
 	payload := ServiceRequest{
 		SessionID: sessionId,
-		Operation: FunctionGetPub,
+		Operation: functionGetPub,
 		Label:     pubLabel,
 	}
 	jsonData, err := json.Marshal(payload)
@@ -778,7 +778,7 @@ func operationGetPub(client *http.Client, sessionId string, serverIP string, pub
 		}
 		return nil, errors.New("return changepin request is false")
 	}
-	if res.Data.RetCode != SUCCESS {
+	if res.Data.RetCode != success {
 		return nil, errors.New(getReturnCodeMessage(res.Data.RetCode))
 	}
 

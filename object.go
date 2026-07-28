@@ -41,54 +41,54 @@ type ServiceResponse struct {
 }
 
 const (
-	DEFAULT_RANDOM_LEN = 32
-	USER_OBJECT        = 2
+	defaultRandomLen = 32
+	userObject       = 2
 
-	FAILED           = 0
-	SUCCESS          = 1
-	NOLABELFOUND     = 2
-	MAXUSAGE         = 3
-	UNAUTHORIZEDFUNC = 4
-	INVALIDPACKET    = 5
-	KEYEXISTED       = 6
-	PININCORRECT     = 7
-	PINLOCKED        = 8
-	SESSIONINVALID   = 9
-	INVALIDENCRYPTED = 10
+	failed           = 0
+	success          = 1
+	noLabelFound     = 2
+	maxUsage         = 3
+	unAuthorizedFunc = 4
+	invalidPacket    = 5
+	keyExisted       = 6
+	pinIncorrect     = 7
+	pinLocked        = 8
+	sessionInvalid   = 9
+	invalidEncrypted = 10
 )
 
 const (
-	FunctionPing          = "PING"
-	FunctionEncrypt       = "ENCRYPT"
-	FunctionDecrypt       = "DECRYPT"
-	FunctionSign256PSS    = "SIGN256PSS"
-	FunctionSign512PSS    = "SIGN512PSS"
-	FunctionSign256PKCS   = "SIGN256PKCS"
-	FunctionVerify256PSS  = "VERIFY256PSS"
-	FunctionVerify512PSS  = "VERIFY512PSS"
-	FunctionVerify256PKCS = "VERIFY256PKCS"
-	FunctionRNG           = "RNG"
-	FunctionBackup        = "BACKUP"
-	FunctionRestore       = "RESTORE"
-	FunctionDelete        = "DELETE"
-	FunctionGenKeySym     = "GENKEYSYM"
-	FunctionGenKeyAsym    = "GENKEYASYM"
-	FunctionSetIV         = "SETIV"
-	FunctionChangePIN     = "CHANGEPIN"
-	FunctionChangeLabel   = "CHANGELABEL"
-	FunctionGetPub        = "GETPUB"
+	functionPing          = "PING"
+	functionEncrypt       = "ENCRYPT"
+	functionDecrypt       = "DECRYPT"
+	functionSign256PSS    = "SIGN256PSS"
+	functionSign512PSS    = "SIGN512PSS"
+	functionSign256PKCS   = "SIGN256PKCS"
+	functionVerify256PSS  = "VERIFY256PSS"
+	functionVerify512PSS  = "VERIFY512PSS"
+	functionVerify256PKCS = "VERIFY256PKCS"
+	functionRNG           = "RNG"
+	functionBackup        = "BACKUP"
+	functionRestore       = "RESTORE"
+	functionDelete        = "DELETE"
+	functionGenKeySym     = "GENKEYSYM"
+	functionGenKeyAsym    = "GENKEYASYM"
+	functionSetIV         = "SETIV"
+	functionChangePIN     = "CHANGEPIN"
+	functionChangeLabel   = "CHANGELABEL"
+	functionGetPub        = "GETPUB"
 )
 
 var mapRetCodeToString map[int]string = map[int]string{
-	FAILED:           "Failure",
-	SUCCESS:          "Success",
-	NOLABELFOUND:     "No Label Found",
-	MAXUSAGE:         "Max Usage",
-	UNAUTHORIZEDFUNC: "Unauthorized Function",
-	INVALIDPACKET:    "Invalid Packet",
-	KEYEXISTED:       "Key Already Existed",
-	PININCORRECT:     "PIN Incorrect",
-	PINLOCKED:        "PIN Locked",
-	SESSIONINVALID:   "Session Invalid",
-	INVALIDENCRYPTED: "Invalid Encrypted Data",
+	failed:           "Failure",
+	success:          "Success",
+	noLabelFound:     "No Label Found",
+	maxUsage:         "Max Usage",
+	unAuthorizedFunc: "Unauthorized Function",
+	invalidPacket:    "Invalid Packet",
+	keyExisted:       "Key Already Existed",
+	pinIncorrect:     "PIN Incorrect",
+	pinLocked:        "PIN Locked",
+	sessionInvalid:   "Session Invalid",
+	invalidEncrypted: "Invalid Encrypted Data",
 }

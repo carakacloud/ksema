@@ -106,7 +106,7 @@ func (k *Ksema) Ping() error {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	cipher, err := operationEncrypt(k.client, k.sessID, k.serverIP, data, keyLabel)
@@ -119,7 +119,7 @@ func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	dataBytes, err := base64.StdEncoding.DecodeString(data)
@@ -139,16 +139,16 @@ func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string, error) {
 	var operation string
 
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
 	switch typeMech {
 	case SHA256_PSS:
-		operation = FunctionSign256PSS
+		operation = functionSign256PSS
 	case SHA512_PSS:
-		operation = FunctionSign512PSS
+		operation = functionSign512PSS
 	case SHA256_PKCS:
-		operation = FunctionSign256PKCS
+		operation = functionSign256PKCS
 	default:
 		return "", errors.New("invalid verify algorithm")
 	}
@@ -176,16 +176,16 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string
 func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, typeMech int) error {
 	var operation string
 
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
 	switch typeMech {
 	case SHA256_PSS:
-		operation = FunctionVerify256PSS
+		operation = functionVerify256PSS
 	case SHA512_PSS:
-		operation = FunctionVerify512PSS
+		operation = functionVerify512PSS
 	case SHA256_PKCS:
-		operation = FunctionVerify256PKCS
+		operation = functionVerify256PKCS
 	default:
 		return errors.New("invalid verify algorithm")
 	}
@@ -291,7 +291,7 @@ func (k *Ksema) Random(lenRandom uint16) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 func (k *Ksema) Backup(fileName, keyLabel string) error {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
 	return operationBackup(k.client, k.sessID, k.serverIP, k.userType, []byte(fileName), keyLabel)
@@ -306,7 +306,7 @@ func (k *Ksema) Restore(fileName string) error {
 // Perform deletion of a keylabel
 // Return error if it is not success
 func (k *Ksema) Delete(keyLabel string) error {
-	if k.userType > USER_OBJECT && keyLabel == "" {
+	if k.userType > userObject && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
 	return operationDelete(k.client, k.sessID, k.serverIP, keyLabel)
