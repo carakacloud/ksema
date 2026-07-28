@@ -18,7 +18,7 @@ import (
 	"os"
 )
 
-type Ksema struct {
+type ksema struct {
 	serverIP string
 	apiKey   string
 	pin      string
@@ -30,7 +30,7 @@ type Ksema struct {
 // New return the pointer of Ksema object
 //
 // It automatically execute the key exchange and must be success in order to use it
-func New(serverIP, apiKey, pin string) (*Ksema, error) {
+func New(serverIP, apiKey, pin string) (*ksema, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -42,7 +42,7 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 		},
 	}
 
-	k := &Ksema{
+	k := &ksema{
 		serverIP: serverIP,
 		apiKey:   apiKey,
 		pin:      pin,
@@ -57,7 +57,7 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 }
 
 // Perform auth with account keys
-func (k *Ksema) auth() (bool, error) {
+func (k *ksema) auth() (bool, error) {
 	var res authResponse
 
 	payload := authRequest{
@@ -97,7 +97,7 @@ func (k *Ksema) auth() (bool, error) {
 
 // Perform ping to server
 // Return error if failed
-func (k *Ksema) Ping() error {
+func (k *ksema) Ping() error {
 	return operationPing(k.client, k.sessID, k.serverIP)
 }
 
@@ -105,7 +105,7 @@ func (k *Ksema) Ping() error {
 // Return the cipher in base64 and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
+func (k *ksema) Encrypt(data []byte, keyLabel string) (string, error) {
 	if k.userType > userObject && keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
@@ -118,7 +118,7 @@ func (k *Ksema) Encrypt(data []byte, keyLabel string) (string, error) {
 // Return the plaintext in string and error
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
+func (k *ksema) Decrypt(data string, keyLabel string) (string, error) {
 	if k.userType > userObject && keyLabel == "" {
 		return "", errors.New("no key label specified")
 	}
@@ -136,7 +136,7 @@ func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 //
 // User object does not need to specified the key label used, except for user slot
 // NOTE: type of sign algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
-func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string, error) {
+func (k *ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string, error) {
 	var operation string
 
 	if k.userType > userObject && keyLabel == "" {
@@ -173,7 +173,7 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string
 //
 // User object does not need to specified the key label used, except for user slot
 // NOTE: type of verify algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
-func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, typeMech int) error {
+func (k *ksema) Verify(dataFilename, signatureFilename string, keyLabel string, typeMech int) error {
 	var operation string
 
 	if k.userType > userObject && keyLabel == "" {
@@ -208,7 +208,7 @@ func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, 
 //
 // Public key file must contains PEM-encoded public key bytes
 // NOTE: type of verify algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
-func (k *Ksema) VerifyWithLocalKey(dataFilename string, signatureFilename string, pubKeyFilename string, typeMech int) error {
+func (k *ksema) VerifyWithLocalKey(dataFilename string, signatureFilename string, pubKeyFilename string, typeMech int) error {
 	pemBytes, err := os.ReadFile(pubKeyFilename)
 	if err != nil {
 		return fmt.Errorf("read pubkey: %w", err)
@@ -271,7 +271,7 @@ func (k *Ksema) VerifyWithLocalKey(dataFilename string, signatureFilename string
 // Return error if it is not success
 //
 // if the length specified is 0, it will use the default length which is 32
-func (k *Ksema) Random(lenRandom uint16) (string, error) {
+func (k *ksema) Random(lenRandom uint16) (string, error) {
 	var lengthBytes []byte
 
 	if lenRandom > 0 {
@@ -290,7 +290,7 @@ func (k *Ksema) Random(lenRandom uint16) (string, error) {
 // Return error if it is not success
 //
 // User object does not need to specified the key label used, except for user slot
-func (k *Ksema) Backup(fileName, keyLabel string) error {
+func (k *ksema) Backup(fileName, keyLabel string) error {
 	if k.userType > userObject && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
@@ -299,13 +299,13 @@ func (k *Ksema) Backup(fileName, keyLabel string) error {
 
 // Perform restore of a keylabel using the backed-up file
 // Return error if it is not success
-func (k *Ksema) Restore(fileName string) error {
+func (k *ksema) Restore(fileName string) error {
 	return operationRestore(k.client, k.sessID, k.serverIP, []byte(fileName))
 }
 
 // Perform deletion of a keylabel
 // Return error if it is not success
-func (k *Ksema) Delete(keyLabel string) error {
+func (k *ksema) Delete(keyLabel string) error {
 	if k.userType > userObject && keyLabel == "" {
 		return errors.New("no key label specified")
 	}
@@ -317,24 +317,24 @@ func (k *Ksema) Delete(keyLabel string) error {
 // If both of the label is specified, it will generate asymmetric key
 //
 // Note that user object is not authorized to use this function
-func (k *Ksema) GenKey(label1, label2 string) error {
+func (k *ksema) GenKey(label1, label2 string) error {
 	if label2 != "" {
 		return k.genKeyAsym(label1, label2)
 	}
 	return k.genKeySym(label1)
 }
 
-func (k *Ksema) genKeySym(label string) error {
+func (k *ksema) genKeySym(label string) error {
 	return operationGenKeySym(k.client, k.sessID, k.serverIP, label)
 }
 
-func (k *Ksema) genKeyAsym(pubLabel, privLabel string) error {
+func (k *ksema) genKeyAsym(pubLabel, privLabel string) error {
 	return operationGenKeyAsym(k.client, k.sessID, k.serverIP, pubLabel, privLabel)
 }
 
 // Override the default IV temporarily
 // This effect will be remove if there is new session
-func (k *Ksema) SetIV(iv string) error {
+func (k *ksema) SetIV(iv string) error {
 	if len(iv) != 16 {
 		return errors.New("IV must be 16 characters")
 	}
@@ -344,19 +344,19 @@ func (k *Ksema) SetIV(iv string) error {
 // Change the PIN of slot
 //
 // NOTE: this will generate new apikey and all existing apikey is deleted
-func (k *Ksema) ChangePIN(oldPIN string, newPIN string) (string, error) {
+func (k *ksema) ChangePIN(oldPIN string, newPIN string) (string, error) {
 	newAPIKey, err := operationChangePIN(k.client, k.sessID, k.serverIP, oldPIN, newPIN)
 
 	return string(newAPIKey), err
 }
 
 // Change the key label of specific key
-func (k *Ksema) ChangeLabel(oldLabel string, newLabel string) error {
+func (k *ksema) ChangeLabel(oldLabel string, newLabel string) error {
 	return operationChangeLabel(k.client, k.sessID, k.serverIP, oldLabel, newLabel)
 }
 
 // Get the public key from label
-func (k *Ksema) GetPub(pubLabel string) error {
+func (k *ksema) GetPub(pubLabel string) error {
 	pubKey, err := operationGetPub(k.client, k.sessID, k.serverIP, pubLabel)
 	if err == nil {
 		if err := os.WriteFile("key.pub", pubKey, 0644); err != nil {
