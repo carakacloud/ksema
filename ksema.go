@@ -58,9 +58,9 @@ func New(serverIP, apiKey, pin string) (*Ksema, error) {
 
 // Perform auth with account keys
 func (k *Ksema) auth() (bool, error) {
-	var res AuthResponse
+	var res authResponse
 
-	payload := AuthRequest{
+	payload := authRequest{
 		APIKey: k.apiKey,
 		PIN:    k.pin,
 	}

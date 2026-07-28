@@ -13,7 +13,7 @@ import (
 )
 
 func operationPing(client *http.Client, sessionId string, serverIP string) error {
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: "PING",
 	}
@@ -37,7 +37,7 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func operationPing(client *http.Client, sessionId string, serverIP string) error
 func operationEncrypt(client *http.Client, sessionId string, serverIP string, plainText []byte, keyLabel string) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionEncrypt,
 		Label:     keyLabel,
@@ -85,7 +85,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func operationEncrypt(client *http.Client, sessionId string, serverIP string, pl
 func operationDecrypt(client *http.Client, sessionId string, serverIP string, cipherText []byte, keyLabel string) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionDecrypt,
 		Label:     keyLabel,
@@ -138,7 +138,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -165,7 +165,7 @@ func operationDecrypt(client *http.Client, sessionId string, serverIP string, ci
 func operationSign(client *http.Client, sessionId string, serverIP string, operation string, data []byte, keyLabel string) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: operation,
 		Label:     keyLabel,
@@ -191,7 +191,7 @@ func operationSign(client *http.Client, sessionId string, serverIP string, opera
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -225,7 +225,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, ope
 	dataPayload = append(dataPayload, uint16ToBytes(uint16(signatureLen))...)
 	dataPayload = append(dataPayload, signature...)
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: operation,
 		Label:     keyLabel,
@@ -251,7 +251,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, ope
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -273,7 +273,7 @@ func operationVerify(client *http.Client, sessionId string, serverIP string, ope
 func operationRNG(client *http.Client, sessionId string, serverIP string, data []byte) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionRNG,
 		Data:      data,
@@ -298,7 +298,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -325,7 +325,7 @@ func operationRNG(client *http.Client, sessionId string, serverIP string, data [
 func operationBackup(client *http.Client, sessionId string, serverIP string, userType int, data []byte, keyLabel string) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionBackup,
 		Data:      data,
@@ -351,7 +351,7 @@ func operationBackup(client *http.Client, sessionId string, serverIP string, use
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -405,7 +405,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 	}
 	line := content[1]
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionRestore,
 		Data:      line,
@@ -430,7 +430,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -452,7 +452,7 @@ func operationRestore(client *http.Client, sessionId string, serverIP string, da
 func operationDelete(client *http.Client, sessionId string, serverIP string, keyLabel string) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionDelete,
 		Label:     keyLabel,
@@ -477,7 +477,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -499,7 +499,7 @@ func operationDelete(client *http.Client, sessionId string, serverIP string, key
 func operationGenKeySym(client *http.Client, sessionId string, serverIP string, keyLabel string) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionGenKeySym,
 		Label:     keyLabel,
@@ -524,7 +524,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -546,7 +546,7 @@ func operationGenKeySym(client *http.Client, sessionId string, serverIP string, 
 func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string, pubLabel, privLabel string) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionGenKeyAsym,
 		Label:     fmt.Sprintf("%s;%s", pubLabel, privLabel),
@@ -571,7 +571,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -593,7 +593,7 @@ func operationGenKeyAsym(client *http.Client, sessionId string, serverIP string,
 func operationSetIV(client *http.Client, sessionId string, serverIP string, data []byte) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionSetIV,
 		Data:      data,
@@ -618,7 +618,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -640,7 +640,7 @@ func operationSetIV(client *http.Client, sessionId string, serverIP string, data
 func operationChangePIN(client *http.Client, sessionId string, serverIP string, oldPIN string, newPIN string) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionChangePIN,
 		Label:     oldPIN,
@@ -666,7 +666,7 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -693,7 +693,7 @@ func operationChangePIN(client *http.Client, sessionId string, serverIP string, 
 func operationChangeLabel(client *http.Client, sessionId string, serverIP string, keyLabel string, newLabel string) error {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionChangeLabel,
 		Label:     keyLabel,
@@ -719,7 +719,7 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 		return fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return err
@@ -741,7 +741,7 @@ func operationChangeLabel(client *http.Client, sessionId string, serverIP string
 func operationGetPub(client *http.Client, sessionId string, serverIP string, pubLabel string) ([]byte, error) {
 	var err error
 
-	payload := ServiceRequest{
+	payload := serviceRequest{
 		SessionID: sessionId,
 		Operation: functionGetPub,
 		Label:     pubLabel,
@@ -766,7 +766,7 @@ func operationGetPub(client *http.Client, sessionId string, serverIP string, pub
 		return nil, fmt.Errorf("server returned status %d", resp.StatusCode)
 	}
 
-	var res ServiceResponse
+	var res serviceResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err

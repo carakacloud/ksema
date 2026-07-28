@@ -6,38 +6,38 @@ const (
 	SHA256_PKCS
 )
 
-type Data struct {
+type dataResp struct {
 	Message string `json:"message"`
 	RetCode int    `json:"retCode"`
 }
 
-type AuthRequest struct {
+type authRequest struct {
 	APIKey string `json:"apiKey"`
 	PIN    string `json:"pin"`
 }
 
-type AuthData struct {
+type authData struct {
 	SessionID string `json:"sessionId"`
 	UserType  int    `json:"userType"`
 }
 
-type AuthResponse struct {
+type authResponse struct {
 	Success  bool     `json:"success"`
-	Data     AuthData `json:"data"`
+	Data     authData `json:"data"`
 	ErrorMsg string   `json:"error"`
 }
 
-type ServiceRequest struct {
+type serviceRequest struct {
 	SessionID string `json:"sessionId"`
 	Operation string `json:"operation"`
 	Label     string `json:"label"`
 	Data      []byte `json:"data"`
 }
 
-type ServiceResponse struct {
-	Success  bool   `json:"success"`
-	Data     Data   `json:"data"`
-	ErrorMsg string `json:"error"`
+type serviceResponse struct {
+	Success  bool     `json:"success"`
+	Data     dataResp `json:"data"`
+	ErrorMsg string   `json:"error"`
 }
 
 const (
