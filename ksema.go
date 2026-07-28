@@ -2,9 +2,15 @@ package ksema
 
 import (
 	"bytes"
+	"crypto"
+	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/sha512"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -129,6 +135,7 @@ func (k *Ksema) Decrypt(data string, keyLabel string) (string, error) {
 // Return the filename of data signature and error
 //
 // User object does not need to specified the key label used, except for user slot
+// NOTE: type of sign algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
 func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string, error) {
 	var operation string
 
@@ -165,6 +172,7 @@ func (k *Ksema) Sign(dataFilename string, keyLabel string, typeMech int) (string
 // Return error if it is invalid
 //
 // User object does not need to specified the key label used, except for user slot
+// NOTE: type of verify algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
 func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, typeMech int) error {
 	var operation string
 
@@ -193,6 +201,70 @@ func (k *Ksema) Verify(dataFilename, signatureFilename string, keyLabel string, 
 		return err
 	}
 	return operationVerify(k.client, k.sessID, k.serverIP, operation, data, signature, keyLabel)
+}
+
+// Perform verifying of a data bytes with signature and local public key
+// Return error if it is invalid
+//
+// Public key file must contains PEM-encoded public key bytes
+// NOTE: type of verify algorithm provided are SHA256_PSS, SHA512_PSS, SHA256_PKCS
+func (k *Ksema) VerifyWithLocalKey(dataFilename string, signatureFilename string, pubKeyFilename string, typeMech int) error {
+	pemBytes, err := os.ReadFile(pubKeyFilename)
+	if err != nil {
+		return fmt.Errorf("read pubkey: %w", err)
+	}
+
+	block, _ := pem.Decode(pemBytes)
+	if block == nil {
+		return errors.New("failed to decode PEM block")
+	}
+
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return fmt.Errorf("parse pubkey: %w", err)
+	}
+
+	rsaKey, ok := pub.(*rsa.PublicKey)
+	if !ok {
+		return errors.New("not an RSA public key")
+	}
+
+	data, err := os.ReadFile(dataFilename)
+	if err != nil {
+		return err
+	}
+	signature, err := os.ReadFile(signatureFilename)
+	if err != nil {
+		return err
+	}
+
+	switch typeMech {
+	case SHA256_PSS:
+		hashed := sha256.Sum256(data)
+
+		opts := &rsa.PSSOptions{
+			SaltLength: 32,
+			Hash:       crypto.SHA256,
+		}
+
+		return rsa.VerifyPSS(rsaKey, crypto.SHA256, hashed[:], signature, opts)
+
+	case SHA512_PSS:
+		hashed := sha512.Sum512(data)
+
+		opts := &rsa.PSSOptions{
+			SaltLength: 64,
+			Hash:       crypto.SHA512,
+		}
+
+		return rsa.VerifyPSS(rsaKey, crypto.SHA512, hashed[:], signature, opts)
+
+	case SHA256_PKCS:
+		hashed := sha256.Sum256(data)
+		return rsa.VerifyPKCS1v15(rsaKey, crypto.SHA256, hashed[:], signature)
+	}
+
+	return errors.New("invalid verify algorithm type")
 }
 
 // Generate random data in string base64
